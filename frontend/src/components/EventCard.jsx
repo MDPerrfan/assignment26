@@ -24,7 +24,7 @@ const EventCard = ({ id, title, date, location, image, price }) => {
               <span className="mr-2">📍</span> {location}
             </p>
             <p className="flex items-center">
-              <span className="mr-2">💰</span> ${price}
+              <span className="mr-2">💰</span> TK{price}
             </p>
           </div>
         </div>

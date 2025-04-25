@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const eventSchema = new mongoose.Schema({
-    title: {
+    name: {
         type: String,
         required: true,
         trim: true
@@ -23,10 +23,10 @@ const eventSchema = new mongoose.Schema({
         required: true
     },
     category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
+        type: String, // or ObjectId with ref if you're using a separate Category model
         required: true
     },
+
     image: {
         type: String,
         required: true

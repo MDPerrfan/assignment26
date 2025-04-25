@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-
+import { AppContext } from '../context/AppContext'
 const EventDetail = () => {
   const { id } = useParams()
+  const{events}=useContext(AppContext)
   const navigate = useNavigate()
   const [event, setEvent] = useState(null)
-
   useEffect(() => {
     const foundEvent = events.find(e => e._id === id)
     if (foundEvent) {
@@ -41,13 +41,13 @@ const EventDetail = () => {
     }
   }
 
-  if (loading) {
+/*   if (loading) {
     return <div>Loading...</div>
   }
 
   if (error) {
     return <div>Error: {error}</div>
-  }
+  } */
 
   if (!event) {
     return <div>Event not found</div>

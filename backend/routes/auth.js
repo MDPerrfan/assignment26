@@ -2,20 +2,14 @@ import express from 'express'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import auth from '../middleware/auth.js'
-import dotenv from 'dotenv'
-
 const router = express.Router()
 
-// Debug: Check JWT_SECRET at route initialization
-console.log('Auth Routes - JWT_SECRET:', process.env.JWT_SECRET ? 'Present' : 'Missing')
 
 // Register
 router.post('/register', async(req, res) => {
     try {
-        console.log('Registration request body:', req.body);
         const { name, email, password } = req.body
-
-        // Validate required fields
+            // Validate required fields
         if (!name || !email || !password) {
             return res.status(400).json({
                 message: 'All fields are required',
@@ -26,13 +20,6 @@ router.post('/register', async(req, res) => {
                 }
             })
         }
-
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: 'Invalid email format' })
-        }
-
         // Validate password length
         if (password.length < 6) {
             return res.status(400).json({ message: 'Password must be at least 6 characters long' })
@@ -48,14 +35,6 @@ router.post('/register', async(req, res) => {
         const user = new User({ name, email, password })
         await user.save()
 
-        // Check if JWT_SECRET exists before signing
-        if (!process.env.JWT_SECRET) {
-            console.error('JWT_SECRET is not defined. Environment variables:', process.env);
-            return res.status(500).json({
-                message: 'Server configuration error',
-                details: 'JWT_SECRET is not defined in environment variables'
-            });
-        }
 
         // Generate token
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
@@ -64,10 +43,11 @@ router.post('/register', async(req, res) => {
         const userResponse = user.toObject()
         delete userResponse.password
 
-        res.status(201).json({ user: userResponse, token })
+        res.status(201).json({ success: true, user: userResponse, token })
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({
+            success: false,
             message: 'Registration failed',
             details: error.message
         })
@@ -82,19 +62,19 @@ router.post('/login', async(req, res) => {
         // Find user
         const user = await User.findOne({ email })
         if (!user) {
-            return res.status(401).json({ message: 'Invalid credentials' })
+            return res.status(401).json({ success: true, message: 'Invalid credentials' })
         }
 
         // Check password
         const isMatch = await user.comparePassword(password)
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' })
+            return res.status(401).json({ success: false, message: 'Invalid credentials' })
         }
 
         // Check if JWT_SECRET exists before signing
         if (!process.env.JWT_SECRET) {
             console.error('JWT_SECRET is not defined');
-            return res.status(500).json({ message: 'Server configuration error' });
+            return res.status(500).json({ success: false, message: 'Server configuration error' });
         }
 
         // Generate token
@@ -104,10 +84,11 @@ router.post('/login', async(req, res) => {
         const userResponse = user.toObject()
         delete userResponse.password
 
-        res.json({ user: userResponse, token })
+        res.json({ success: true, user: userResponse, token })
     } catch (error) {
         console.error('Login error:', error);
         res.status(400).json({
+            success: false,
             message: 'Login failed',
             details: error.message
         })

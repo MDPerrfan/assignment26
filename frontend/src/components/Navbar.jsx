@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { AppContext } from '../context/AppContext'
 
 const Navbar = () => {
   const navigate = useNavigate()
+  const{user,logout}=useContext(AppContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-const user={}
   const handleLogout = () => {
     logout()
     navigate('/')
@@ -33,10 +34,10 @@ const user={}
                   Dashboard
                 </Link>
                 <div className="flex items-center space-x-4">
-                  <span className="text-gray-700">Welcome, {user.name}</span>
+                  <span className="text-coral-600 text-sm">Welcome, {user.name}</span>
                   <button
                     onClick={handleLogout}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700"
                   >
                     Logout
                   </button>
@@ -44,17 +45,12 @@ const user={}
               </>
             ) : (
               <div className="flex items-center space-x-4">
+            
                 <Link
                   to="/login"
-                  className="text-gray-700 hover:text-indigo-600"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700"
                 >
                   Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
-                >
-                  Register
                 </Link>
               </div>
             )}
@@ -125,19 +121,13 @@ const user={}
                 </>
               ) : (
                 <div className="flex flex-col space-y-2">
+                
                   <Link
                     to="/login"
-                    className="text-gray-700 hover:text-indigo-600"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
                     className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Register
+                    Login
                   </Link>
                 </div>
               )}

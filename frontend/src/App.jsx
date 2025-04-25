@@ -5,7 +5,6 @@ import Home from './pages/Home';
 import EventListings from './pages/EventListings';
 import EventDetail from './pages/EventDetail';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CategoryListings from './pages/CategoryListings';
 import CategoryDetail from './pages/CategoryDetail';
@@ -24,7 +23,6 @@ function App() {
           <Route path="/categories" element={<CategoryListings />} />
           <Route path="/category/:id" element={<CategoryDetail />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
           <Route
             path="/dashboard"
             element={

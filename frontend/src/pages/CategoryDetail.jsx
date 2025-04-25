@@ -1,33 +1,42 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useParams } from 'react-router-dom'
 import EventCard from '../components/EventCard'
-import { events } from '../assets/assets'
+import { AppContext } from '../context/AppContext'
 
 const CategoryDetail = () => {
-  const { id } = useParams() // id is actually category name
+  const { id } = useParams() // id = category name
+  const { events,loading } = useContext(AppContext)
+  console.log(events)
 
-  // Convert object to array
-  const eventArray = Object.values(events)
-
-  // Filter events by category name
-  const categoryEvents = eventArray.filter(event => {
-    const categoryName = typeof event.category === 'object' 
-      ? event.category.name 
-      : event.category
-
-    return categoryName.toLowerCase() === id.toLowerCase()
-  })
+  // Filter events by category name (case-insensitive)
+  const categoryEvents = events.filter(event => {
+    if (!event.category) return false;
+  
+    const categoryName = typeof event.category === 'object'
+      ? event.category.name
+      : event.category;
+  
+    return categoryName?.toLowerCase() === id.toLowerCase();
+  });
+  if (loading) {
+    return (
+      <div className="container mx-auto px-6 py-12 text-center">
+        <h1 className="text-2xl font-semibold mb-4">Loading events...</h1>
+      </div>
+    );
+  }
+  
 
   return (
     <div className="container mx-auto px-6 py-12">
       <h1 className="text-4xl font-bold mb-8">{id} Events</h1>
       {categoryEvents.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {categoryEvents.map((event, index) => (
+          {categoryEvents.map(event => (
             <EventCard
-              key={index}
-              id={event.id || index}
-              title={event.title}
+              key={event._id}
+              id={event._id}
+              title={event.name}
               date={event.date}
               location={event.location}
               image={event.image}
