@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
 
 const CreateEvent = () => {
   const navigate = useNavigate()
-  const { createEvent, categories, loading, error } = useApp()
   const [formData, setFormData] = useState({
     title: '',
     description: '',

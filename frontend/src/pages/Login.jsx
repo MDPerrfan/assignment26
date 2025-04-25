@@ -1,175 +1,116 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
+import React, { useContext, useState } from 'react';
+import { assets } from '../assets/assets';
+import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../Context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Login = () => {
-  const navigate = useNavigate()
-  const { login, error, user } = useApp()
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  })
-  const [formErrors, setFormErrors] = useState({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const { backendUrl, setIsLoggedin,getUserData } = useContext(AppContext);
+  const [state, setState] = useState("Sign Up");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  // Check if the user is already logged in
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard')  
-    }
-  }, [user, navigate])  
-
-  const validateForm = () => {
-    const errors = {}
-    if (!formData.email) {
-      errors.email = 'Email is required'
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid'
-    }
-    if (!formData.password) {
-      errors.password = 'Password is required'
-    } else if (formData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters'
-    }
-    return errors
-  }
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-    if (formErrors[name]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }))
-    }
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const errors = validateForm()
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors)
-      return
-    }
-    setLoading(true) 
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
     try {
-      setIsSubmitting(true)
-      const userData = await login(formData) 
-      if (userData) {
-        navigate('/dashboard')
+      if (state === 'Sign Up') {
+        const { data } = await axios.post(`${backendUrl}/api/auth/register`, { name, email, password });
+        if (data.success) {
+          setIsLoggedin(true);
+          getUserData();
+          navigate('/');
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });
+        if (data.success) {
+          setIsLoggedin(true);
+          getUserData();
+          navigate('/');
+        } else {
+          toast.error(data.message);
+        }
       }
-    } catch (err) {
-      console.error('Login failed:', err.message)
-    } finally {
-      setIsSubmitting(false)
-      setLoading(false) // Stop loading
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error)
     }
-  }
-
-  // Show loading state if logging in or submitting
-  if (loading || isSubmitting) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">
-            Loading...
-          </h2>
-          <div className="mt-4 text-center">
-            <span className="text-indigo-600">Please wait while we log you in...</span>
-            <div className="mt-4 spinner"> {/* You can add a spinner here */} </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
+    <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">
+      <div className="bg-slate-900 p-10 rounded-lg shadow-lg w-full sm:w-96 text-indigo-300 text-sm">
+        <h2 className="text-3xl font-semibold text-white text-center mb-3">
+          {state === 'Sign Up' ? "Create Account" : "Login to your account!"}
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
-          <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-            create a new account
-          </Link>
+        <p className="text-center mb-6 text-sm">
+          {state === 'Sign Up' ? "Create your account." : "Login to your account!"}
         </p>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
+        <form onSubmit={onSubmitHandler}>
+          {state === "Sign Up" && (
+            <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
+              <img src={assets.person_icon} alt="Person Icon" />
+              <input
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+                className="bg-transparent outline-none w-full"
+                type="text"
+                placeholder="Full Name"
+                required
+              />
             </div>
           )}
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    formErrors.email ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-                />
-                {formErrors.email && (
-                  <p className="mt-1 text-sm text-red-600">{formErrors.email}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    formErrors.password ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-                />
-                {formErrors.password && (
-                  <p className="mt-1 text-sm text-red-600">{formErrors.password}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-              >
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
-              </button>
-            </div>
-          </form>
-        </div>
+          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
+            <img src={assets.mail_icon} alt="Mail Icon" />
+            <input
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              className="bg-transparent outline-none w-full"
+              type="email"
+              placeholder="Email id"
+              required
+            />
+          </div>
+          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
+            <img src={assets.lock_icon} alt="Lock Icon" />
+            <input
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              className="bg-transparent outline-none w-full"
+              type="password"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <p onClick={() => navigate('/reset-pass')} className="mb-4 text-indigo-600 cursor-pointer">
+            Forgot Password?
+          </p>
+          <button type="submit" className="w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium">
+            {state}
+          </button>
+          {state === 'Sign Up' ? (
+            <p className="text-gray-400 text-center text-xs mt-4">
+              Already have an account?{" "}
+              <span className="text-blue-400 cursor-pointer underline" onClick={() => setState("Login")}>
+                Login here
+              </span>
+            </p>
+          ) : (
+            <p className="text-gray-400 text-center text-xs mt-4">
+              Don't have an account?{" "}
+              <span className="text-blue-400 cursor-pointer underline" onClick={() => setState("Sign Up")}>
+                Sign up
+              </span>
+            </p>
+          )}
+        </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

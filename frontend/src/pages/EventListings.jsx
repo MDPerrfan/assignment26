@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
-
+import { events } from '../assets/assets'
 const EventListings = () => {
   const navigate = useNavigate()
-  const { events, user, loading, error } = useApp()
   const [filters, setFilters] = useState({
     category: '',
     search: '',
@@ -25,13 +23,14 @@ const EventListings = () => {
     }
   }
 
-  const filteredEvents = events.filter((event) => {
-    const matchesCategory = !filters.category || event.category._id === filters.category
-    const matchesSearch = !filters.search || 
-      event.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-      event.description.toLowerCase().includes(filters.search.toLowerCase())
-    return matchesCategory && matchesSearch
-  })
+  const filteredEvents = Object.values(events).filter((event) => {
+    const matchesCategory = !filters.category || event.category._id === filters.category;
+    const matchesSearch = !filters.search ||
+      event.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+      event.description.toLowerCase().includes(filters.search.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+  
 
   const sortedEvents = [...filteredEvents].sort((a, b) => {
     if (filters.sortBy === 'date') {
@@ -43,13 +42,13 @@ const EventListings = () => {
     return 0
   })
 
-  if (loading) {
+/*   if (loading) {
     return <div>Loading...</div>
-  }
+  } */
 
-  if (error) {
+/*   if (error) {
     return <div>Error: {error}</div>
-  }
+  } */
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -70,12 +69,11 @@ const EventListings = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedEvents.map((event) => (
           <div key={event._id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
+            <img src={event.image} alt={event.name} className="w-full h-48 object-cover" />
             <div className="p-4">
-              <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
+              <h2 className="text-xl font-semibold mb-2">{event.name}</h2>
               <p className="text-gray-600 mb-4">{event.description}</p>
               <div className="flex justify-between items-center">
-                <span className="text-indigo-600 font-semibold">${event.price}</span>
                 <button
                   onClick={() => handleSaveEvent(event._id)}
                   className="text-indigo-600 hover:text-indigo-800"

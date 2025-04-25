@@ -1,50 +1,50 @@
 import Banner from '../components/Banner'
 import EventCard from '../components/EventCard'
 import CategoryCard from '../components/CategoryCard'
+import { events } from '../assets/assets'
 
 export default function Home() {
-  const categories = [
-    { id: 1, name: 'Music', icon: '🎵', eventCount: 12 },
-    { id: 2, name: 'Sports', icon: '⚽', eventCount: 8 },
-    { id: 3, name: 'Arts', icon: '🎨', eventCount: 15 },
-    { id: 4, name: 'Food', icon: '🍽️', eventCount: 10 },
-  ]
 
-  const events = [
-    {
-      id: 1,
-      title: 'Summer Music Festival',
-      date: 'June 15, 2024',
-      location: 'Central Park, NY',
-      image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-      price: 75
-    },
-    {
-      id: 2,
-      title: 'Tech Conference 2024',
-      date: 'July 20, 2024',
-      location: 'Convention Center, SF',
-      image: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-      price: 199
-    },
-    {
-      id: 3,
-      title: 'Food & Wine Festival',
-      date: 'August 5, 2024',
-      location: 'Downtown, LA',
-      image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-      price: 45
+  const categoryIcons = {
+    Music: '🎵',
+    Sports: '⚽',
+    Arts: '🎨',
+    Food: '🍽️',
+    Technology: '💻',
+    Business: '💼',
+    Education: '📚',
+    Entertainment: '🎭',
+  }
+  // Convert events object to array
+  const eventArray = Object.values(events)
+
+  // Create a map to count events per category
+  const categoryMap = {}
+
+  eventArray.forEach(event => {
+    const categoryName = event.category || 'Unknown'
+    if (!categoryMap[categoryName]) {
+      categoryMap[categoryName] = { count: 1 }
+    } else {
+      categoryMap[categoryName].count++
     }
-  ]
+  })
 
+  // Create array of categories
+  const categories = Object.entries(categoryMap).map(([name, data], index) => ({
+    id: index + 1,
+    name,
+    icon: categoryIcons[name] || '📌',
+    eventCount: data.count
+  }))
   return (
     <div>
-      <Banner 
+      <Banner
         title="Discover Amazing Events"
         subtitle="Find and book tickets for the best events in your area"
         backgroundImage="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
       />
-      
+
       {/* Categories Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
@@ -68,17 +68,21 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold mb-12">Upcoming Events</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {events.map(event => (
-              <EventCard
-                key={event.id}
-                id={event.id}
-                title={event.title}
-                date={event.date}
-                location={event.location}
-                image={event.image}
-                price={event.price}
-              />
-            ))}
+            {events
+              .slice() // to avoid mutating original array
+              .sort((a, b) => new Date(a.date) - new Date(b.date)) // sort by earliest date
+              .slice(0, 3) // take only the first 3 after sorting
+              .map(event => (
+                <EventCard
+                  key={event.id}
+                  title={event.title}
+                  date={event.date}
+                  location={event.location}
+                  image={event.image}
+                  price={event.price}
+                />
+              ))}
+
           </div>
         </div>
       </section>

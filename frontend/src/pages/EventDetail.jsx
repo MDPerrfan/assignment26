@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
 
 const EventDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { events, user, loading, error } = useApp()
   const [event, setEvent] = useState(null)
 
   useEffect(() => {

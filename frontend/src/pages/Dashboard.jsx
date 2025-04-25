@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
 
 const Dashboard = () => {
   const navigate = useNavigate()
-  const { events, user, loading, error } = useApp()
   const [activeTab, setActiveTab] = useState('my-events')
 
   const myEvents = events.filter(event => event.organizer?._id === user?._id)

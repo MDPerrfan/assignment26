@@ -1,17 +1,41 @@
 import React from 'react'
 import CategoryCard from '../components/CategoryCard'
+import { events } from '../assets/assets'
+
+const categoryIcons = {
+  Music: '🎵',
+  Sports: '⚽',
+  Arts: '🎨',
+  Food: '🍽️',
+  Technology: '💻',
+  Business: '💼',
+  Education: '📚',
+  Entertainment: '🎭',
+}
 
 const CategoryListings = () => {
-  const categories = [
-    { id: 1, name: 'Music', icon: '🎵', eventCount: 12 },
-    { id: 2, name: 'Sports', icon: '⚽', eventCount: 8 },
-    { id: 3, name: 'Arts', icon: '🎨', eventCount: 15 },
-    { id: 4, name: 'Food', icon: '🍽️', eventCount: 10 },
-    { id: 5, name: 'Technology', icon: '💻', eventCount: 6 },
-    { id: 6, name: 'Business', icon: '💼', eventCount: 9 },
-    { id: 7, name: 'Education', icon: '📚', eventCount: 7 },
-    { id: 8, name: 'Entertainment', icon: '🎭', eventCount: 11 },
-  ]
+  // Convert events object to array
+  const eventArray = Object.values(events)
+
+  // Create a map to count events per category
+  const categoryMap = {}
+
+  eventArray.forEach(event => {
+    const categoryName = event.category || 'Unknown'
+    if (!categoryMap[categoryName]) {
+      categoryMap[categoryName] = { count: 1 }
+    } else {
+      categoryMap[categoryName].count++
+    }
+  })
+
+  // Create array of categories
+  const categories = Object.entries(categoryMap).map(([name, data], index) => ({
+    id: index + 1,
+    name,
+    icon: categoryIcons[name] || '📌',
+    eventCount: data.count
+  }))
 
   return (
     <div className="container mx-auto px-6 py-12">
@@ -30,5 +54,7 @@ const CategoryListings = () => {
     </div>
   )
 }
+
+
 
 export default CategoryListings 
