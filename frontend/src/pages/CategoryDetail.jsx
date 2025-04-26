@@ -1,12 +1,11 @@
 import React, { useContext } from 'react'
 import { useParams } from 'react-router-dom'
 import EventCard from '../components/EventCard'
-import { AppContext } from '../context/AppContext'
+import { AppContext } from '../Context/AppContext'
 
 const CategoryDetail = () => {
   const { id } = useParams() // id = category name
   const { events,loading } = useContext(AppContext)
-  console.log(events)
 
   // Filter events by category name (case-insensitive)
   const categoryEvents = events.filter(event => {

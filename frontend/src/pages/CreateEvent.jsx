@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppContext } from '../Context/AppContext'
 
 const CreateEvent = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    title: '',
+    name: '',
     description: '',
     date: '',
     time: '',
@@ -13,12 +14,21 @@ const CreateEvent = () => {
     category: '',
     image: '',
   })
-  const [formErrors, setFormErrors] = useState({})
+  const categories = [
+    { _id: 'music', name: 'Music' },
+    { _id: 'sports', name: 'Sports' },
+    { _id: 'education', name: 'Education' },
+    { _id: 'technology', name: 'Technology' },
+    { _id: 'food', name: 'Food' },
+    { _id: 'fashion', name: 'Fashion' },
+  ]
 
+  const [formErrors, setFormErrors] = useState({})
+  const { createEvent, loading } = useContext(AppContext)
   const validateForm = () => {
     const errors = {}
-    if (!formData.title.trim()) {
-      errors.title = 'Title is required'
+    if (!formData.name.trim()) {
+      errors.name = 'Title is required'
     }
     if (!formData.description.trim()) {
       errors.description = 'Description is required'
@@ -82,12 +92,6 @@ const CreateEvent = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Create New Event</h1>
 
-      {error && (
-        <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
-        </div>
-      )}
-
       <div className="bg-white rounded-lg shadow-md p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -96,17 +100,17 @@ const CreateEvent = () => {
             </label>
             <input
               type="text"
-              id="title"
-              name="title"
-              value={formData.title}
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              className={`mt-1 block w-full rounded-md shadow-sm ${
-                formErrors.title ? 'border-red-300' : 'border-gray-300'
-              } focus:border-indigo-500 focus:ring-indigo-500`}
+              className={`mt-1 block w-full rounded-md shadow-sm ${formErrors.title ? 'border-red-300' : 'border-gray-300'
+                } focus:border-indigo-500 focus:ring-indigo-500`}
             />
-            {formErrors.title && (
-              <p className="mt-1 text-sm text-red-600">{formErrors.title}</p>
+            {formErrors.name && (
+              <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>
             )}
+
           </div>
 
           <div>
@@ -119,9 +123,8 @@ const CreateEvent = () => {
               rows="4"
               value={formData.description}
               onChange={handleChange}
-              className={`mt-1 block w-full rounded-md shadow-sm ${
-                formErrors.description ? 'border-red-300' : 'border-gray-300'
-              } focus:border-indigo-500 focus:ring-indigo-500`}
+              className={`mt-1 block w-full rounded-md shadow-sm ${formErrors.description ? 'border-red-300' : 'border-gray-300'
+                } focus:border-indigo-500 focus:ring-indigo-500`}
             />
             {formErrors.description && (
               <p className="mt-1 text-sm text-red-600">{formErrors.description}</p>
@@ -139,9 +142,8 @@ const CreateEvent = () => {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md shadow-sm ${
-                  formErrors.date ? 'border-red-300' : 'border-gray-300'
-                } focus:border-indigo-500 focus:ring-indigo-500`}
+                className={`mt-1 block w-full rounded-md shadow-sm ${formErrors.date ? 'border-red-300' : 'border-gray-300'
+                  } focus:border-indigo-500 focus:ring-indigo-500`}
               />
               {formErrors.date && (
                 <p className="mt-1 text-sm text-red-600">{formErrors.date}</p>
@@ -158,9 +160,8 @@ const CreateEvent = () => {
                 name="time"
                 value={formData.time}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md shadow-sm ${
-                  formErrors.time ? 'border-red-300' : 'border-gray-300'
-                } focus:border-indigo-500 focus:ring-indigo-500`}
+                className={`mt-1 block w-full rounded-md shadow-sm ${formErrors.time ? 'border-red-300' : 'border-gray-300'
+                  } focus:border-indigo-500 focus:ring-indigo-500`}
               />
               {formErrors.time && (
                 <p className="mt-1 text-sm text-red-600">{formErrors.time}</p>
@@ -178,9 +179,8 @@ const CreateEvent = () => {
               name="location"
               value={formData.location}
               onChange={handleChange}
-              className={`mt-1 block w-full rounded-md shadow-sm ${
-                formErrors.location ? 'border-red-300' : 'border-gray-300'
-              } focus:border-indigo-500 focus:ring-indigo-500`}
+              className={`mt-1 block w-full rounded-md shadow-sm ${formErrors.location ? 'border-red-300' : 'border-gray-300'
+                } focus:border-indigo-500 focus:ring-indigo-500`}
             />
             {formErrors.location && (
               <p className="mt-1 text-sm text-red-600">{formErrors.location}</p>
@@ -200,9 +200,8 @@ const CreateEvent = () => {
                 step="0.01"
                 value={formData.price}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md shadow-sm ${
-                  formErrors.price ? 'border-red-300' : 'border-gray-300'
-                } focus:border-indigo-500 focus:ring-indigo-500`}
+                className={`mt-1 block w-full rounded-md shadow-sm ${formErrors.price ? 'border-red-300' : 'border-gray-300'
+                  } focus:border-indigo-500 focus:ring-indigo-500`}
               />
               {formErrors.price && (
                 <p className="mt-1 text-sm text-red-600">{formErrors.price}</p>
@@ -218,9 +217,8 @@ const CreateEvent = () => {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md shadow-sm ${
-                  formErrors.category ? 'border-red-300' : 'border-gray-300'
-                } focus:border-indigo-500 focus:ring-indigo-500`}
+                className={`mt-1 block w-full rounded-md shadow-sm ${formErrors.category ? 'border-red-300' : 'border-gray-300'
+                  } focus:border-indigo-500 focus:ring-indigo-500`}
               >
                 <option value="">Select a category</option>
                 {categories.map((category) => (
@@ -228,6 +226,7 @@ const CreateEvent = () => {
                     {category.name}
                   </option>
                 ))}
+
               </select>
               {formErrors.category && (
                 <p className="mt-1 text-sm text-red-600">{formErrors.category}</p>
@@ -245,9 +244,8 @@ const CreateEvent = () => {
               name="image"
               value={formData.image}
               onChange={handleChange}
-              className={`mt-1 block w-full rounded-md shadow-sm ${
-                formErrors.image ? 'border-red-300' : 'border-gray-300'
-              } focus:border-indigo-500 focus:ring-indigo-500`}
+              className={`mt-1 block w-full rounded-md shadow-sm ${formErrors.image ? 'border-red-300' : 'border-gray-300'
+                } focus:border-indigo-500 focus:ring-indigo-500`}
             />
             {formErrors.image && (
               <p className="mt-1 text-sm text-red-600">{formErrors.image}</p>

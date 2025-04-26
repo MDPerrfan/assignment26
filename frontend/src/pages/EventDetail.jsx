@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 const EventDetail = () => {
   const { id } = useParams()
-  const{events}=useContext(AppContext)
+  const{events,user}=useContext(AppContext)
   const navigate = useNavigate()
   const [event, setEvent] = useState(null)
   useEffect(() => {

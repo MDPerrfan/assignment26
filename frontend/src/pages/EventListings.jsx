@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { events } from '../assets/assets'
+import { AppContext } from '../Context/AppContext'
 const EventListings = () => {
   const navigate = useNavigate()
+  const{events,loading,user,toggleSaveEvent}=useContext(AppContext)
   const [filters, setFilters] = useState({
     category: '',
     search: '',
@@ -17,6 +18,7 @@ const EventListings = () => {
 
     try {
       // TODO: Implement save event functionality in AppContext
+      await toggleSaveEvent(eventId);
       console.log('Save event:', eventId)
     } catch (err) {
       console.error('Failed to save event:', err)
@@ -42,13 +44,11 @@ const EventListings = () => {
     return 0
   })
 
-/*   if (loading) {
+  if (loading) {
     return <div>Loading...</div>
-  } */
+  }
 
-/*   if (error) {
-    return <div>Error: {error}</div>
-  } */
+
 
   return (
     <div className="container mx-auto px-4 py-8">

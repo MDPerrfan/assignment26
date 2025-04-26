@@ -1,30 +1,22 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppContext } from '../Context/AppContext'
 
 const Dashboard = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('my-events')
+  const {user,events,loading}= useContext(AppContext)
 
-  const myEvents = events.filter(event => event.organizer?._id === user?._id)
+  const myEvents = events.filter(event => event.creator === user?._id)
   const savedEvents = events.filter(event => event.savedBy?.includes(user?._id))
-
   if (loading) {
     return <div>Loading...</div>
   }
 
-  if (error) {
-    return <div>Error: {error}</div>
-  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-
-      {error && (
-        <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
-        </div>
-      )}
 
       <div className="bg-white rounded-lg shadow">
         <div className="border-b border-gray-200">
