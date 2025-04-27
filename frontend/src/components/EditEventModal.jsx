@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { AppContext } from '../Context/AppContext';
-import { toast } from 'react-toastify';
+import { AppContext } from '../context/AppContext';
 
 const EditEventModal = ({ event, isOpen, onClose }) => {
   const { updateEvent, loading } = useContext(AppContext);
