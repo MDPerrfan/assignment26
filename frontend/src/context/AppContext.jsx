@@ -6,7 +6,7 @@ export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
     //const backendUrl = "http://localhost:5000"
-    const backendUrl='https://eventhandleserver.vercel.app/'
+    const backendUrl='https://eventhandleserver-9xkilwmvy-mohammed-parves-projects.vercel.app'
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState()
     const [isLoggedin, setIsLoggedin] = useState(false)
