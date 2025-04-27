@@ -2,7 +2,7 @@
 
 A full-stack event management platform built with the MERN stack (MongoDB, Express.js, React.js, Node.js) that allows users to create, manage, and discover events.
 
-LIVE at [https://](https://eventhandler.vercel.app/)
+[LIVE LINK](https://eventhandler.vercel.app/)
 
 ## Features
 
