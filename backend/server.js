@@ -11,7 +11,7 @@ dotenv.config()
 const app = express()
 const allowedOrigins = [
         'http://localhost:5173',
-        'https://eventhandlerserver.onrender.com'
+        'https://eventhandler.vercel.app'
     ]
     // Middleware
 app.use(cors({
