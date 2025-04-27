@@ -1,10 +1,11 @@
 import Banner from '../components/Banner'
 import EventCard from '../components/EventCard'
 import CategoryCard from '../components/CategoryCard'
-import { events } from '../assets/assets'
+import { useContext } from 'react'
+import { AppContext } from '../Context/AppContext'
 
 export default function Home() {
-
+  const { events } = useContext(AppContext)
   const categoryIcons = {
     Music: '🎵',
     Sports: '⚽',
@@ -15,6 +16,7 @@ export default function Home() {
     Education: '📚',
     Entertainment: '🎭',
   }
+
   // Convert events object to array
   const eventArray = Object.values(events)
 
@@ -37,6 +39,7 @@ export default function Home() {
     icon: categoryIcons[name] || '📌',
     eventCount: data.count
   }))
+
   return (
     <div>
       <Banner
@@ -68,21 +71,21 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold mb-12">Upcoming Events</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {events
-              .slice() // to avoid mutating original array
+            {eventArray
+              .slice()
               .sort((a, b) => new Date(a.date) - new Date(b.date)) // sort by earliest date
-              .slice(0, 3) // take only the first 3 after sorting
+              .slice(0, 3)
               .map(event => (
                 <EventCard
-                  key={event.id}
-                  title={event.title}
+                  key={event._id}
+                  id={event._id}
+                  title={event.name}
                   date={event.date}
                   location={event.location}
                   image={event.image}
                   price={event.price}
                 />
               ))}
-
           </div>
         </div>
       </section>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { AppContext } from '../Context/AppContext'
+import { toast } from 'react-toastify'
+
 const EventListings = () => {
   const navigate = useNavigate()
-  const{events,loading,user,toggleSaveEvent}=useContext(AppContext)
+  const { events, loading, user, toggleSaveEvent } = useContext(AppContext)
   const [filters, setFilters] = useState({
     category: '',
     search: '',
@@ -17,10 +19,14 @@ const EventListings = () => {
     }
 
     try {
-      // TODO: Implement save event functionality in AppContext
-      await toggleSaveEvent(eventId);
-      console.log('Save event:', eventId)
+      const result = await toggleSaveEvent(eventId);
+      if (result.saved) {
+        toast.success("Event saved successfully!");
+      } else {
+        toast.success("Event unsaved successfully!");
+      }
     } catch (err) {
+      toast.error("Failed to save event!");
       console.error('Failed to save event:', err)
     }
   }
@@ -32,7 +38,6 @@ const EventListings = () => {
       event.description.toLowerCase().includes(filters.search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
-  
 
   const sortedEvents = [...filteredEvents].sort((a, b) => {
     if (filters.sortBy === 'date') {
@@ -48,12 +53,10 @@ const EventListings = () => {
     return <div>Loading...</div>
   }
 
-
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Events</h1>
-      
+
       {/* Filters */}
       <div className="mb-8">
         <input
@@ -74,12 +77,18 @@ const EventListings = () => {
               <h2 className="text-xl font-semibold mb-2">{event.name}</h2>
               <p className="text-gray-600 mb-4">{event.description}</p>
               <div className="flex justify-between items-center">
-                <button
-                  onClick={() => handleSaveEvent(event._id)}
-                  className="text-indigo-600 hover:text-indigo-800"
-                >
-                  Save
-                </button>
+                <span className="text-indigo-600 font-semibold">${event.price}</span>
+                {user && (
+                  <button
+                    onClick={() => handleSaveEvent(event._id)}
+                    className={`text-indigo-600 hover:text-indigo-800 ${
+                      user.savedEvents?.includes(event._id) ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                    disabled={user.savedEvents?.includes(event._id)}
+                  >
+                    {user.savedEvents?.includes(event._id) ? 'Saved' : 'Save'}
+                  </button>
+                )}
               </div>
             </div>
           </div>

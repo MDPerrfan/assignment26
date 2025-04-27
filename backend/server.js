@@ -34,9 +34,10 @@ connectDB()
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err)
-    res.status(500).json({
-        message: 'Something went wrong!',
-        details: err.message
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message || 'Something went wrong!',
+        details: process.env.NODE_ENV === 'development' ? err.stack : undefined
     })
 })
 

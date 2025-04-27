@@ -6,7 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const Login = () => {
-  const { backendUrl, setIsLoggedin,getUserData } = useContext(AppContext);
+  const { backendUrl, setIsLoggedin, getUserData } = useContext(AppContext);
   const [state, setState] = useState("Login");
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,9 +22,10 @@ const Login = () => {
           localStorage.setItem('token', data.token);
           setIsLoggedin(true);
           getUserData();
+          toast.success("Registration successful! Welcome aboard!");
           navigate('/');
         } else {
-          toast.error(data.message);
+          toast.error(data.message || "Registration failed!");
         }
       } else {
         const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });
@@ -32,14 +33,15 @@ const Login = () => {
           localStorage.setItem('token', data.token);
           setIsLoggedin(true);
           getUserData();
+          toast.success("Login successful! Welcome back!");
           navigate('/');
         } else {
-          toast.error(data.message);
+          toast.error(data.message || "Login failed!");
         }
       }
     } catch (error) {
-      toast.error(error.message);
-      console.log(error)
+      toast.error(error.response?.data?.message || "An error occurred. Please try again.");
+      console.error(error);
     }
   };
 

@@ -1,18 +1,52 @@
 import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../Context/AppContext'
+import EditEventModal from '../components/EditEventModal'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 const Dashboard = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('my-events')
-  const {user,events,loading}= useContext(AppContext)
+  const { user, events, loading, backendUrl } = useContext(AppContext)
+  const [selectedEvent, setSelectedEvent] = useState(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const myEvents = events.filter(event => event.creator === user?._id)
   const savedEvents = events.filter(event => event.savedBy?.includes(user?._id))
+
+  const handleEditClick = (event) => {
+    setSelectedEvent(event)
+    setIsEditModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false)
+    setSelectedEvent(null)
+  }
+
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      const token = localStorage.getItem('token')
+      await axios.delete(`${backendUrl}/api/events/${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      toast.success("Event deleted successfully!");
+      // Refresh the page to update the events list
+      window.location.reload();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to delete event!");
+      console.error('Failed to delete event:', err)
+    }
+  }
+
   if (loading) {
     return <div>Loading...</div>
   }
-
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -63,24 +97,24 @@ const Dashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {myEvents.map((event) => (
                     <div key={event._id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                      <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
+                      <img src={event.image} alt={event.name} className="w-full h-48 object-cover" />
                       <div className="p-4">
-                        <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
+                        <h3 className="text-lg font-semibold mb-2">{event.name}</h3>
                         <p className="text-gray-600 mb-4">{event.description}</p>
                         <div className="flex justify-between items-center">
                           <span className="text-indigo-600 font-semibold">${event.price}</span>
                           <div className="space-x-2">
                             <button
-                              onClick={() => navigate(`/edit-event/${event._id}`)}
+                              onClick={() => handleEditClick(event)}
                               className="text-indigo-600 hover:text-indigo-800"
                             >
                               Edit
                             </button>
                             <button
-                              onClick={() => navigate(`/event/${event._id}`)}
-                              className="text-gray-600 hover:text-gray-800"
+                              onClick={() => handleDeleteEvent(event._id)}
+                              className="text-red-600 hover:text-red-800"
                             >
-                              View
+                              Delete
                             </button>
                           </div>
                         </div>
@@ -99,9 +133,9 @@ const Dashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {savedEvents.map((event) => (
                     <div key={event._id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                      <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
+                      <img src={event.image} alt={event.name} className="w-full h-48 object-cover" />
                       <div className="p-4">
-                        <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
+                        <h3 className="text-lg font-semibold mb-2">{event.name}</h3>
                         <p className="text-gray-600 mb-4">{event.description}</p>
                         <div className="flex justify-between items-center">
                           <span className="text-indigo-600 font-semibold">${event.price}</span>
@@ -121,6 +155,14 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {selectedEvent && (
+        <EditEventModal
+          event={selectedEvent}
+          isOpen={isEditModalOpen}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   )
 }

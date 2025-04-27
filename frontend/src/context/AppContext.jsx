@@ -20,16 +20,15 @@ export const AppContextProvider = (props) => {
             if (data) {
                 setEvents(data);
                 setLoading(false)
-            } else {
-                toast.error("Failed to get events!")
             }
         } catch (error) {
-            console.error(error);
+            toast.error(error.response?.data?.message || "Failed to get events!");
+            setLoading(false)
         }
     }
+
     const getUserData = async () => {
         try {
-            // Ideally store token in localStorage and attach it here
             const token = localStorage.getItem('token')
             setLoading(true)
             if (!token) return;
@@ -41,59 +40,92 @@ export const AppContextProvider = (props) => {
                 setLoading(false)
             }
         } catch (error) {
-            console.error("Get user failed:", error)
+            toast.error(error.response?.data?.message || "Failed to get user data!");
+            setLoading(false)
         }
     }
+
     //logout
     const logout = () => {
         localStorage.removeItem('token');
         setIsLoggedin(false);
         setUser(null);
+        toast.success("Logged out successfully!");
     }
+
     //Save/unsave event 
     const toggleSaveEvent = async (eventId) => {
         try {
-        const token = localStorage.getItem('token')
-          const res = await axios.post(backendUrl+
-            `/api/events/${eventId}/save`,
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          return res.data;
+            const token = localStorage.getItem('token')
+            const res = await axios.post(backendUrl + `/api/events/${eventId}/save`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            toast.success(res.data.saved ? "Event saved!" : "Event unsaved!");
+            // Refresh events after saving/unsaving
+            await getAllevents();
+            return res.data;
         } catch (error) {
-          console.error('Failed to toggle save event:', error);
-          throw error;
+            toast.error(error.response?.data?.message || "Failed to toggle save event!");
+            throw error;
         }
-      };
-      //create event
-      const createEvent = async (formData) => {
+    };
+
+    //create event
+    const createEvent = async (formData) => {
         try {
-          setLoading(true)
-    
-          const token = localStorage.getItem('token') // assuming token is stored on login
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-    
-          const res = await axios.post(backendUrl+'/api/events/create', formData, config) // assuming your backend endpoint is /api/events
-          return res.data
+            setLoading(true)
+            const token = localStorage.getItem('token')
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+            const res = await axios.post(backendUrl + '/api/events/create', formData, config)
+            toast.success("Event created successfully!");
+            // Refresh events after creation
+            await getAllevents();
+            return res.data
         } catch (err) {
-          console.error('Failed to create event:', err)
+            toast.error(err.response?.data?.message || "Failed to create event!");
+            throw err;
         } finally {
-          setLoading(false)
+            setLoading(false)
         }
-      }
+    }
+
+    //update event
+    const updateEvent = async (eventId, formData) => {
+        try {
+            setLoading(true)
+            const token = localStorage.getItem('token')
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+            const res = await axios.patch(backendUrl + `/api/events/${eventId}`, formData, config)
+            toast.success("Event updated successfully!");
+            // Refresh events after update
+            await getAllevents();
+            return res.data
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to update event!");
+            throw err;
+        } finally {
+            setLoading(false)
+        }
+    }
+
     useEffect(() => {
         getAllevents();
         getUserData();
-
     }, [])
+
     const value = {
         backendUrl,
         loading,
@@ -106,8 +138,10 @@ export const AppContextProvider = (props) => {
         getUserData,
         logout,
         toggleSaveEvent,
-        createEvent
+        createEvent,
+        updateEvent
     }
+
     return (
         <AppContext.Provider value={value}>
             {props.children}

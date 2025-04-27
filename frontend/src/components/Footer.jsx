@@ -41,11 +41,6 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/register" className="text-gray-400 hover:text-white">
-                  Register
-                </Link>
-              </li>
-              <li>
                 <Link to="/dashboard" className="text-gray-400 hover:text-white">
                   Dashboard
                 </Link>
@@ -62,7 +57,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Event Platform. All rights reserved.</p>
+          <p>&copy; 2025 Event Platform. All rights reserved.</p>
         </div>
       </div>
     </footer>

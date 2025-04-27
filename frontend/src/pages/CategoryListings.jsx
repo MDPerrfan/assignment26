@@ -1,6 +1,7 @@
 import React from 'react'
 import CategoryCard from '../components/CategoryCard'
-import { events } from '../assets/assets'
+import { useContext } from 'react'
+import { AppContext } from '../Context/AppContext'
 
 const categoryIcons = {
   Music: '🎵',
@@ -14,14 +15,15 @@ const categoryIcons = {
 }
 
 const CategoryListings = () => {
+  const { events } = useContext(AppContext)
   // Convert events object to array
   const eventArray = Object.values(events)
 
-  // Create a map to count events per category
+  // Create a map to count events per category (case-insensitive)
   const categoryMap = {}
 
   eventArray.forEach(event => {
-    const categoryName = event.category || 'Unknown'
+    const categoryName = event.category ? event.category.toLowerCase() : 'unknown'
     if (!categoryMap[categoryName]) {
       categoryMap[categoryName] = { count: 1 }
     } else {
@@ -29,13 +31,21 @@ const CategoryListings = () => {
     }
   })
 
-  // Create array of categories
-  const categories = Object.entries(categoryMap).map(([name, data], index) => ({
-    id: index + 1,
-    name,
-    icon: categoryIcons[name] || '📌',
-    eventCount: data.count
-  }))
+  // Create array of categories with proper case from the first occurrence
+  const categories = Object.entries(categoryMap).map(([name, data], index) => {
+    // Find the first event with this category to get the proper case
+    const firstEvent = eventArray.find(event => 
+      event.category && event.category.toLowerCase() === name
+    )
+    const properCaseName = firstEvent ? firstEvent.category : name.charAt(0).toUpperCase() + name.slice(1)
+    
+    return {
+      id: index + 1,
+      name: properCaseName,
+      icon: categoryIcons[properCaseName] || '📌',
+      eventCount: data.count
+    }
+  })
 
   return (
     <div className="container mx-auto px-6 py-12">
@@ -54,7 +64,5 @@ const CategoryListings = () => {
     </div>
   )
 }
-
-
 
 export default CategoryListings 

@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../Context/AppContext'
+import { toast } from 'react-toastify'
 
 const CreateEvent = () => {
   const navigate = useNavigate()
@@ -76,15 +77,15 @@ const CreateEvent = () => {
     const errors = validateForm()
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
+      toast.error("Please fill in all required fields correctly");
       return
     }
 
     try {
       await createEvent(formData)
       navigate('/dashboard')
-    } catch (err) {
-      // Error is already handled by the context
-      console.error('Failed to create event:', err.message)
+    } catch (error) {
+      console.error('Failed to create event:', error)
     }
   }
 
