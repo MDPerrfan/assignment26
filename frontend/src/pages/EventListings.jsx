@@ -26,7 +26,7 @@ const EventListings = () => {
         toast.success("Event unsaved successfully!");
       }
     } catch (err) {
-      toast.error("Failed to save event!");
+      toast.error("Failed to save/unsave event!");
       console.error('Failed to save event:', err)
     }
   }
